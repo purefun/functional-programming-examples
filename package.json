@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "fp-ts": "^2.8.3",
+    "io-ts": "^2.2.11",
     "jest": "^26.5.2",
     "ts-node-dev": "^1.0.0-pre.63"
   }
