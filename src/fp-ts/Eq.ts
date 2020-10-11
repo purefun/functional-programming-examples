@@ -1,49 +1,50 @@
-import * as assert from 'assert'
-import { contramap, Eq, getStructEq } from 'fp-ts/Eq'
+import { contramap, Eq, eqNumber, getStructEq } from 'fp-ts/Eq'
 
-// primitive type
+it('equals', () => {
 
-const eqNumber: Eq<number> = {
-  equals: (x, y) => x === y,
-}
+  // local eqNumber
+  const eqNumber: Eq<number> = {
+    equals: (x, y) => x === y,
+  }
 
-assert.ok(eqNumber.equals(1, 1))
-
-// compound type
+  expect(eqNumber.equals(1, 1)).toBe(true)
+})
 
 type Point = {
   x: number,
   y: number,
 }
 
-const eqPoint: Eq<Point> = {
-  equals: (p1, p2) => p1 === p2 || p1.x === p2.x && p1.y === p2.y,
-}
+const p1: Point = { x: 1, y: 1 }
+const p2: Point = { x: 1, y: 1 }
 
-const p1 = { x: 1, y: 1 }
-const p2 = { x: 1, y: 1 }
+it('equals without getStructEq', () => {
+  const eqPoint: Eq<Point> = {
+    equals: (p1, p2) => p1 === p2 || p1.x === p2.x && p1.y === p2.y,
+  }
 
-assert.ok(eqPoint.equals(p1, p2))
-
-// struct constructor
-
-const eqPointS = getStructEq({
-  x: eqNumber,
-  y: eqNumber,
+  expect(eqPoint.equals(p1, p2)).toBe(true)
 })
 
-assert.ok(eqPointS.equals(p1, p2))
+it('getStructEq', () => {
+  const eqPoint = getStructEq({
+    x: eqNumber,
+    y: eqNumber,
+  })
 
-// contramap: entity equivalence
+  expect(eqPoint.equals(p1, p2)).toBe(true)
+})
 
-type User = {
-  id: number
-  name: string
-}
+it('contramap', () => {
+  type User = {
+    id: number
+    name: string
+  }
 
-const eqUser = contramap((user: User) => user.id)(eqNumber)
+  const eqUser = contramap((user: User) => user.id)(eqNumber)
 
-const user1 = { id: 1, name: 'nil' }
-const user2 = { id: 1, name: 'nilson' }
+  const user1: User = { id: 1, name: 'nil' }
+  const user2: User = { id: 1, name: 'nilson' }
 
-assert.ok(eqUser.equals(user1, user2))
+  expect(eqUser.equals(user1, user2)).toBe(true)
+})
